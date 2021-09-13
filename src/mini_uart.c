@@ -18,7 +18,7 @@ void uart_init() {
   put32(AUX_MU_BAUD_REG, 541);    // Set Baudrate to 115200 @ 500 MHz
   put32(AUX_MU_CNTL_REG, 3);      // Enable reciever/transmitter
 
-  uart_send_str(" Mini-UART is initialized.\n");
+  uart_send_str("Mini-UART is initialized.\n");
 }
 
 void uart_send(char c)
