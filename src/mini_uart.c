@@ -21,14 +21,6 @@ void uart_init() {
   uart_send_str("Mini-UART is initialized.\n");
 }
 
-void uart_send(char c)
-{
-  // 5th bit @ MU_LSR says that the transmitter can accept at least 1 bit
-  while(!(get32(AUX_MU_LSR_REG) & 0x20));
-
-	put32(AUX_MU_IO_REG, c);
-}
-
 char uart_recv()
 {
   // 1th bit @ MU_LSR says that there is at least 1 bit waiting to be read.
@@ -38,11 +30,20 @@ char uart_recv()
 	return (get32(AUX_MU_IO_REG) & 0xFF);
 }
 
+void uart_send(char c)
+{
+  // 5th bit @ MU_LSR says that the transmitter can accept at least 1 bit
+  while(!(get32(AUX_MU_LSR_REG) & 0x20));
+
+	put32(AUX_MU_IO_REG, c);
+}
+
 void uart_send_str(char *str)
 {
   while(*str)
   {
-    if (*str == '\n') {
+    if (*str == '\n')
+    {
       uart_send('\r');
     }
 
@@ -60,5 +61,4 @@ void uart_send_hex(unsigned int hex)
 
 	uart_send(c[0]);
 	uart_send(c[1]);
-	uart_send('\n');
 }
