@@ -1,0 +1,17 @@
+name: Build Kernel Image
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: docker://smatyukevich/raspberry-pi-os-builder
+    - uses: actions/checkout@v2
+    - run: make
