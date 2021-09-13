@@ -8,10 +8,8 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    container: smatyukevich/raspberry-pi-os-builder
     steps:
-    - uses: docker://smatyukevich/raspberry-pi-os-builder
     - uses: actions/checkout@v2
     - run: make
