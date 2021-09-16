@@ -5,7 +5,7 @@
 void kernel_main()
 {
   uart_init();
-  uart_send_str("Hello, world!\n");
+  uart_send_str("\nDON'T PANIC\n");
 
   while(1)
   {
