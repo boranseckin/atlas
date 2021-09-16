@@ -6,6 +6,14 @@
 #define TXD 14
 #define RXD 15
 
+#define BAUD_RATE 115200
+
+unsigned int calculate_baudrate_counter()
+{
+  // baudrate = system_clock_freq / (8 * (baudrate_reg + 1))
+  return ((500000000 / BAUD_RATE) / 8) - 1;
+}
+
 void uart_init() {
   GPIO_pin_set_func(TXD, GFAlt5);     // ALT5 = TXD1
   GPIO_pin_set_func(RXD, GFAlt5);     // ALT5 = RXD1
@@ -15,10 +23,11 @@ void uart_init() {
   put32(AUX_MU_IER_REG,  0);      // Disable interrupts
   put32(AUX_MU_LCR_REG,  3);      // Enable 8-bit mode
   put32(AUX_MU_MCR_REG,  0);      // Set UART1_RTS line to high
-  put32(AUX_MU_BAUD_REG, 541);    // Set Baudrate to 115200 @ 500 MHz
+  put32(                          // Set Baudrate to 115200 @ 500 MHz
+    AUX_MU_BAUD_REG,
+    calculate_baudrate_counter()
+  );
   put32(AUX_MU_CNTL_REG, 3);      // Enable reciever/transmitter
-
-  uart_send_str("Mini-UART is initialized.\n");
 }
 
 char uart_recv()

@@ -1,5 +1,6 @@
 #pragma once
 
+unsigned int calculate_baudrate_counter();
 void uart_init();
 char uart_recv();
 void uart_send(char c);
