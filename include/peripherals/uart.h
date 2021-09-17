@@ -46,3 +46,22 @@
 #define UART_ITIP   (UART_BASE + 0x84)
 #define UART_ITOP   (UART_BASE + 0x88)
 #define UART_TDR    (UART_BASE + 0x8c)
+
+/*
+  https://developer.arm.com/documentation/ddi0183/g/programmers-model/register-descriptions/fractional-baud-rate-register--uartfbrd?lang=en
+
+  Baud Rate = 115200
+  UARTCLK   = 48 MHz
+
+  Baud Rate Divisor = (48 * 10^6) / (16 * 115200) = 26.0417
+  IBRD = 26 and FBRD = 0.0417
+
+  Fractional Part = integer((0.701 * 64) + 0.5) = 3
+  Generated baud rate divide = 26 + (3 / 64) = 26.0469
+  Generate baud rate = (48 * 10^6) / (16 * 26.0469) = 115177
+  
+  Error = (|115177 - 115200| / 115200) * 100 = 0.02%
+*/
+
+#define UART_IBRD_VAL 26
+#define UART_FBRD_VAL 3
