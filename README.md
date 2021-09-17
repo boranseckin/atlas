@@ -5,7 +5,7 @@ A simple homemade kernel for RaspberryPi 4 (BCM2711) from scratch.
 This project is my implementation of the step-by-step guide on how to create a simple operating system (OS) kernel from scratch prepared by [Sergey Matyukevich](https://github.com/s-matyukevich). While I followed his guide word for word, the original version was created for RaspberryPi 3 which unfortunately has a a different SoC (BCM2837). This required me to make some small but important changes.
 
 ### Mini UART
-The first thing to implement was a way to communicate with the kernel. On RaspberryPi there are 2 different UART implementations. While `PL011` is a fully fledged UART implementation, `mini UART` is relatively easier to set up and the drawbacks are not crucial for the simple communication. The most important part of the `mini UART` implementation is setting the baud rate. 
+The first thing to implement was a way to communicate with the kernel. On RaspberryPi there are 2 different UART implementations. While `PL011` is a fully fledged UART implementation, `mini UART` is ~~relatively easier~~ simpler(?) to set up and the drawbacks are not crucial for the simple communication. The most important part of the `mini UART` implementation is setting the baud rate. 
 ```
 baudrate = system_clock_freq / (8 * (baudrate_reg + 1))
 ```
@@ -23,10 +23,15 @@ While on the topic of `config.txt`, I also want to mention other important setti
 
 Another deviation from the guide was enabling the GPIO pins for `mini UART`. On BCM2837, there is a lengthy process of changing the pull-up/pull-down behaviours of the GPIO pins (see GPIO Pull-up/down Clock Registers (`GPPUDCLKn`) on page 101). However, on BCM2711, changing the state of the pins are as easy as just setting a register called `GPIO_PUP_PDN_CNTRL_REGn`. On top of that, this step is not even necessary on BCM2711 because the reset state of the pin 14 and 15 are already low (see 5.3. Alternative Function Assignments on page 76). As a result, the lines 41 to 45 on [mini_uart.c](https://github.com/s-matyukevich/raspberry-pi-os/blob/31fc1481f529ba1a72a8a6bc62dc488b84fc2cdb/src/lesson01/src/mini_uart.c#L41-L45) from the guide can be omitted.
 
+### PL011 UART
+
+Compared to [Mini UART](#mini-uart), the implementation of PL011 UART was much simpler. Most importantly, PL011 UART has its own internal clock that runs at `48 MHz` by default (see [`init_uart_clock`](https://www.raspberrypi.org/documentation/computers/config_txt.html#init_uart_clock)). So, rather than forcing the whole chip to run at turbo, we can just use that clock to fix our communication speed and calculate the baud rate. Calculating the correct baud rate, however, requires a bit of reading of the technical reference manual. But once both the integer and the fraction parts are calculated and set, the rest is a breeze.
+
 ### Sources
 - [ARM Peripherals Datasheet for BCM2711](https://datasheets.raspberrypi.org/bcm2711/bcm2711-peripherals.pdf)
 - [ARM Peripherals Datasheet for BCM2835](https://datasheets.raspberrypi.org/bcm2835/bcm2835-peripherals.pdf) (same for BCM2837)
 - [RaspberryPi Hardware Differences Explained](https://github.com/thanoskoutr/armOS/wiki/Raspberry-Pi-Hardware)
+- [PrimeCell UART (PL011) Technical Reference Manual](https://developer.arm.com/documentation/ddi0183/g)
 
 ### References
 - [s-matyukevich/raspberry-pi-os](https://github.com/s-matyukevich/raspberry-pi-os)
