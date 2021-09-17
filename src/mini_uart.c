@@ -14,7 +14,7 @@ unsigned int calculate_baudrate_counter()
   return ((500000000 / BAUD_RATE) / 8) - 1;
 }
 
-void uart_init() {
+void mini_uart_init() {
   GPIO_pin_set_func(TXD, GFAlt5);     // ALT5 = TXD1
   GPIO_pin_set_func(RXD, GFAlt5);     // ALT5 = RXD1
 
@@ -30,7 +30,7 @@ void uart_init() {
   put32(AUX_MU_CNTL_REG, 3);      // Enable reciever/transmitter
 }
 
-char uart_recv()
+char mini_uart_recv()
 {
   // 1th bit @ MU_LSR says that there is at least 1 bit waiting to be read.
   while(!(get32(AUX_MU_LSR_REG) & 0x01));
@@ -39,7 +39,7 @@ char uart_recv()
 	return (get32(AUX_MU_IO_REG) & 0xFF);
 }
 
-void uart_send(char c)
+void mini_uart_send(char c)
 {
   // 5th bit @ MU_LSR says that the transmitter can accept at least 1 bit
   while(!(get32(AUX_MU_LSR_REG) & 0x20));
@@ -47,27 +47,27 @@ void uart_send(char c)
 	put32(AUX_MU_IO_REG, c);
 }
 
-void uart_send_str(char *str)
+void mini_uart_send_str(char *str)
 {
   while(*str)
   {
     if (*str == '\n')
     {
-      uart_send('\r');
+      mini_uart_send('\r');
     }
 
-    uart_send(*str);
+    mini_uart_send(*str);
     str++;
   }
 }
 
-void uart_send_hex(unsigned int hex)
+void mini_uart_send_hex(unsigned int hex)
 {
 	unsigned char c[2];
 
 	c[0] = hex & 0xFF;
 	c[1] = (hex>>8) & 0xFF;
 
-	uart_send(c[0]);
-	uart_send(c[1]);
+	mini_uart_send(c[0]);
+	mini_uart_send(c[1]);
 }

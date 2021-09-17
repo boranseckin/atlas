@@ -4,20 +4,20 @@
 
 void kernel_main()
 {
-  uart_init();
-  uart_send_str("\nDON'T PANIC\n");
+  mini_uart_init();
+  mini_uart_send_str("\nDON'T PANIC\n");
 
   while(1)
   {
-    unsigned char c = uart_recv();
+    unsigned char c = mini_uart_recv();
     switch (c)
     {
     case 'i':
-      uart_send_hex(get32(AUX_MU_BAUD_REG));
+      mini_uart_send_hex(get32(AUX_MU_BAUD_REG));
       break;
 
     default:
-      uart_send(c);
+      mini_uart_send(c);
       break;
     }
   }
